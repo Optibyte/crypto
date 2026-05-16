@@ -302,12 +302,21 @@ export const NETWORK_TOKENS: NetworkTokens[] = [
     ],
   },
   {
-    chainId: "0x38",
+    chainId: "0x38", // BNB Smart Chain Mainnet
     tokens: [
-      { symbol: "USDT", name: "Tether USD", address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
-      { symbol: "USDC", name: "USD Coin", address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", decimals: 18 },
-      { symbol: "DAI", name: "Dai Stablecoin", address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", decimals: 18 },
+      { symbol: "USDT", name: "Tether USD (BEP-20)", address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
+      { symbol: "USDC", name: "USD Coin (BEP-20)", address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", decimals: 18 },
+      { symbol: "DAI", name: "Dai Stablecoin (BEP-20)", address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", decimals: 18 },
     ],
+    subscriptionContract: undefined, // Set via BSC_CONTRACT_ADDRESS env var after deployment
+  },
+  {
+    chainId: "0x61", // BSC Testnet (97)
+    tokens: [
+      { symbol: "USDT", name: "Test Tether USD (BEP-20)", address: "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd", decimals: 18 },
+      { symbol: "USDC", name: "Test USD Coin (BEP-20)", address: "0x64544969ed7EBf5f083679233325356EbE738930", decimals: 18 },
+    ],
+    subscriptionContract: undefined, // Set via BSC_TESTNET_CONTRACT_ADDRESS env var after deployment
   },
   {
     chainId: "0xa86a",
@@ -351,7 +360,7 @@ export const NETWORK_TOKENS: NetworkTokens[] = [
   {
     chainId: "0xaa36a7",
     tokens: [
-      { symbol: "USDT", name: "Test Tether", address: "0x7169D38820dfd117C3FA1f22a697dBA58d90BA06", decimals: 6 },
+      { symbol: "USDT", name: "Test Tether", address: "0xaA8E23Fb1079EA71e0a1bF189A146386c0930758", decimals: 6 },
       { symbol: "USDC", name: "Test USD Coin", address: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238", decimals: 6 },
       { symbol: "DAI", name: "Test Dai", address: "0x68194a729C2450ad26072b3D33ADaCbcef39D574", decimals: 18 },
     ],

@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { SiEthereum } from "react-icons/si";
 
-const TESTNET_CHAIN_IDS = ["0xaa36a7", "0x5", "0xcd8690dc"];
+const TESTNET_CHAIN_IDS = ["0xaa36a7", "0x5", "0xcd8690dc", "0x61"];
 
 function isTestnet(chainId: string): boolean {
   return TESTNET_CHAIN_IDS.includes(chainId.toLowerCase());
@@ -268,12 +268,21 @@ export default function PayPage() {
       setBalanceLoading(true);
       try {
         const provider = wallet.getEthersProvider();
+        console.log("[BalanceDebug] Fetching balance for:", {
+          tokenAddress: plan.tokenAddress,
+          userAddress: wallet.address,
+          chainId: wallet.chainId,
+          decimals: plan.tokenDecimals
+        });
         const tokenContract = new Contract(plan.tokenAddress, ERC20_ABI, provider);
         const balWei = await tokenContract.balanceOf(wallet.address);
         if (cancelled) return;
         const decimals = plan.tokenDecimals || 18;
-        setTokenBalance(formatUnits(balWei, decimals));
-      } catch {
+        const formatted = formatUnits(balWei, decimals);
+        console.log("[BalanceDebug] Result:", formatted);
+        setTokenBalance(formatted);
+      } catch (err) {
+        console.error("[BalanceDebug] Error fetching balance:", err);
         if (!cancelled) setTokenBalance(null);
       } finally {
         if (!cancelled) setBalanceLoading(false);
@@ -586,6 +595,7 @@ export default function PayPage() {
         }).then((r) => r.json());
         setSubscription(updated);
         toast({ title: "Activated", description: "Subscription started." });
+        setStep("first-payment");
         openWalletAppAfterActivation();
         return;
       }
@@ -603,6 +613,7 @@ export default function PayPage() {
       const created = payload?.subscription ?? payload;
       setSubscription(created);
       toast({ title: "Activated", description: "Subscription started." });
+      setStep("first-payment");
       openWalletAppAfterActivation();
     } catch (e: any) {
       const friendly = getFriendlyError(e, plan.tokenSymbol || "tokens", plan.networkName, plan.networkId);

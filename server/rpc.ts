@@ -30,7 +30,6 @@ function uniqNonEmpty(values: Array<string | null | undefined>): string[] {
 const DEFAULT_RPC_URLS: Record<string, string> = {
   "0x1": "https://eth.llamarpc.com",
   "0x89": "https://polygon-rpc.com",
-  "0x38": "https://bsc-dataseed.binance.org",
   "0xa86a": "https://api.avax.network/ext/bc/C/rpc",
   "0xa4b1": "https://arb1.arbitrum.io/rpc",
   "0xa": "https://mainnet.optimism.io",
@@ -50,6 +49,26 @@ export function getRpcUrls(chainId: string): string[] {
       "https://ethereum-sepolia.publicnode.com",
       "https://sepolia.drpc.org",
       "https://1rpc.io/sepolia",
+    ]);
+  }
+
+  // BNB Smart Chain mainnet: env var override + public fallbacks.
+  if (cid === "0x38") {
+    return uniqNonEmpty([
+      process.env.BSC_RPC_URL,
+      "https://bsc-dataseed.binance.org",
+      "https://bsc-dataseed1.binance.org",
+      "https://bsc-dataseed2.binance.org",
+      "https://bsc-dataseed3.binance.org",
+    ]);
+  }
+
+  // BSC Testnet (97).
+  if (cid === "0x61") {
+    return uniqNonEmpty([
+      process.env.BSC_TESTNET_RPC_URL,
+      "https://data-seed-prebsc-1-s1.binance.org:8545",
+      "https://data-seed-prebsc-2-s1.binance.org:8545",
     ]);
   }
 

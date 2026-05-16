@@ -49,13 +49,14 @@ export interface NetworkMetadata {
 export const SUPPORTED_EVM_NETWORKS: NetworkMetadata[] = [
   { chainId: "0x1", name: "Ethereum Mainnet", symbol: "ETH", type: "mainnet" },
   { chainId: "0x89", name: "Polygon Mainnet", symbol: "MATIC", type: "mainnet" },
-  { chainId: "0x38", name: "BSC Mainnet", symbol: "BNB", type: "mainnet" },
+  { chainId: "0x38", name: "BNB Smart Chain", symbol: "BNB", type: "mainnet" },
   { chainId: "0xa86a", name: "Avalanche C-Chain", symbol: "AVAX", type: "mainnet" },
   { chainId: "0xa4b1", name: "Arbitrum One", symbol: "ETH", type: "mainnet" },
   { chainId: "0xa", name: "Optimism", symbol: "ETH", type: "mainnet" },
   { chainId: "0x2105", name: "Base", symbol: "ETH", type: "mainnet" },
   { chainId: "0xfa", name: "Fantom Opera", symbol: "FTM", type: "mainnet" },
   { chainId: "0xaa36a7", name: "Sepolia Testnet", symbol: "ETH", type: "testnet" },
+  { chainId: "0x61", name: "BSC Testnet", symbol: "BNB", type: "testnet" },
 ];
 
 export const SUPPORTED_TRON_NETWORKS: NetworkMetadata[] = [

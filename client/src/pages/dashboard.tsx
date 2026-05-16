@@ -1638,7 +1638,7 @@ function SettingsSection({
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-              ERC-20 / EVM Networks
+              ERC-20 / BEP-20 / EVM Networks
             </h4>
             
             {executorKeyStatus?.hasEvmKey ? (
@@ -1669,7 +1669,7 @@ function SettingsSection({
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 rounded-md border border-amber-500/20 bg-amber-500/5">
                   <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                  <p className="text-xs text-amber-600">No EVM executor set. Sepolia/Mainnet charges will fail.</p>
+                  <p className="text-xs text-amber-600">No EVM executor set. BSC/Sepolia/Mainnet charges will fail.</p>
                 </div>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -1743,7 +1743,7 @@ function SettingsSection({
           <div className="p-3 rounded-md bg-primary/5 border border-primary/20">
             <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 leading-relaxed">
               <Shield className="w-3 h-3 text-primary flex-shrink-0" />
-              Use dedicated wallets with limited funds for safety. EVM keys start with 0x. TRON keys are 64-character hex strings found in TronLink.
+              Use dedicated wallets with limited funds for safety. EVM keys (0x prefix) cover Ethereum, BSC, Polygon, and all EVM-compatible networks. TRON keys are 64-character hex strings found in TronLink.
             </p>
           </div>
         </CardContent>

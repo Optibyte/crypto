@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { SUPPORTED_NETWORKS, isTronChain } from "@/lib/metamask";
+import { SUPPORTED_NETWORKS, isTronChain, isBscChain } from "@/lib/metamask";
 import { getTokensForNetwork, type TokenInfo } from "@shared/contracts";
 import { hasMinimumSubscriptionInterval, MIN_SUBSCRIPTION_INTERVAL_SECONDS } from "@shared/interval";
 import { getTronTokensForNetwork, type TronTokenInfo } from "@shared/tron-contracts";
@@ -86,6 +86,7 @@ export default function CreatePlanDialog({ open, onOpenChange, savedWallets = []
 
   const selectedNetwork = form.watch("networkChainId");
   const isSelectedTron = isTronChain(selectedNetwork);
+  const isSelectedBsc = isBscChain(selectedNetwork);
 
   // Filter saved wallets for the current network type
   const filteredSavedWallets = useMemo(() => {
@@ -221,7 +222,11 @@ export default function CreatePlanDialog({ open, onOpenChange, savedWallets = []
             Create Auto-charge
           </DialogTitle>
           <DialogDescription>
-            {isSelectedTron ? "Set up a recurring TRC-20 auto-charge on TRON." : "Set up a recurring ERC-20 auto-charge."}
+            {isSelectedTron
+              ? "Set up a recurring TRC-20 auto-charge on TRON."
+              : isSelectedBsc
+              ? "Set up a recurring BEP-20 auto-charge on BNB Smart Chain."
+              : "Set up a recurring ERC-20 auto-charge."}
           </DialogDescription>
         </DialogHeader>
 
@@ -539,7 +544,11 @@ export default function CreatePlanDialog({ open, onOpenChange, savedWallets = []
             />
 
             <div className="p-3 rounded-md bg-blue-500/10 border border-blue-500/20 text-xs text-blue-700 dark:text-blue-300">
-              Users will approve a one-time ERC-20 token allowance. After approval, recurring charges execute automatically without wallet popups.
+              {isSelectedBsc
+                ? "Users will approve a one-time BEP-20 token allowance on BNB Smart Chain. After approval, recurring charges execute automatically without wallet popups."
+                : isSelectedTron
+                ? "Users will approve a one-time TRC-20 token allowance on TRON. After approval, recurring charges execute automatically without wallet popups."
+                : "Users will approve a one-time ERC-20 token allowance. After approval, recurring charges execute automatically without wallet popups."}
             </div>
 
             <Button type="submit" className="w-full" disabled={mutation.isPending} data-testid="button-submit-plan">

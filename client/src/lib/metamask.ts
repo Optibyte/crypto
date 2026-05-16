@@ -78,6 +78,13 @@ export function isTronChain(chainId: string): boolean {
   return TRON_CHAIN_ID_SET.has(chainId?.toLowerCase());
 }
 
+const BSC_CHAIN_ID_SET = new Set(["0x38", "0x61"]);
+
+/** Returns true if the given hex chain ID belongs to BNB Smart Chain. */
+export function isBscChain(chainId: string): boolean {
+  return BSC_CHAIN_ID_SET.has(chainId?.toLowerCase());
+}
+
 const CHAIN_NAMES: Record<string, string> = {};
 SUPPORTED_NETWORKS.forEach((n) => { CHAIN_NAMES[n.chainId] = n.name; });
 

@@ -105,12 +105,20 @@ function buildSdkScript(host: string): string {
 `;
 }
 
+/** Returns the subscription contract address from environment variables for networks that require deployment. */
+function getEnvContractForNetwork(networkId: string): string | undefined {
+  const lower = networkId.toLowerCase();
+  if (lower === "0x38") return process.env.BSC_CONTRACT_ADDRESS || undefined;
+  if (lower === "0x61") return process.env.BSC_TESTNET_CONTRACT_ADDRESS || undefined;
+  return undefined;
+}
+
 /** Returns the subscription contract address for a plan, using the correct registry for its chain type. */
 function getContractAddrForPlan(plan: { networkId: string; contractAddress: string | null; chainType: string | null }): string | undefined {
   if (plan.chainType === "tron") {
     return plan.contractAddress ?? getTronContractForNetwork(plan.networkId) ?? undefined;
   }
-  return plan.contractAddress ?? getContractForNetwork(plan.networkId) ?? undefined;
+  return plan.contractAddress ?? getContractForNetwork(plan.networkId) ?? getEnvContractForNetwork(plan.networkId) ?? undefined;
 }
 
 
@@ -1077,6 +1085,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         (isTronPlan
           ? getTronContractForNetwork(normalizedInput.networkId)
           : getContractForNetwork(normalizedInput.networkId)) ||
+        getEnvContractForNetwork(normalizedInput.networkId) ||
         null;
       const plan = await storage.createPlan(req.session.userId!, {
         ...normalizedInput,
