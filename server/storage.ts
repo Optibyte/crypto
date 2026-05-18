@@ -1,6 +1,6 @@
 import { type User, type InsertUser, type Plan, type InsertPlan, type Subscription, type InsertSubscription, type SchedulerLog, type UserWallet, type InsertWallet, type PlanVersion, type SdkKey, type SdkInstallation, type Webhook, type WebhookDelivery, type BillingProposal, type ExecutionLog, users, plans, subscriptions, schedulerLogs, schedulerState, wallets, planVersions, qrNonces, sdkKeys, sdkInstallations, executionLogs, webhooks, webhookDeliveries, billingProposals } from "../shared/schema";
 import { db } from "./db";
-import { eq, and, or, lte, lt, isNotNull, ne, desc, inArray, sql } from "drizzle-orm";
+import { eq, and, lte, lt, isNotNull, ne, desc, inArray, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { formatUnits, parseUnits } from "ethers";
 import { AddressUtils } from "../shared/address-utils";
@@ -46,6 +46,7 @@ export interface IStorage {
   renewSchedulerLock(name: string, lockedBy: string, ttlMs: number): Promise<boolean>;
   releaseSchedulerLock(name: string, lockedBy: string): Promise<void>;
   forceReleaseSchedulerLock(name: string): Promise<void>;
+  resetStaleExecutionLogs(): Promise<void>;
   getDueSubscriptions(now: Date): Promise<Subscription[]>;
   getSubscriptionsWithPendingExecution(): Promise<Subscription[]>;
   markSubscriptionExecutionPending(id: string, txHash: string, createdAt: Date): Promise<Subscription | undefined>;
@@ -885,8 +886,17 @@ export class DatabaseStorage implements IStorage {
     return rows;
   }
 
-  async createExecutionLog(subId: string, cycleId: string): Promise<any> {
+  async resetStaleExecutionLogs(): Promise<void> {
     const staleThreshold = new Date(Date.now() - 10 * 60 * 1000); // 10 minutes
+    const rows = await db
+      .update(executionLogs)
+      .set({ status: "error" })
+      .where(and(ne(executionLogs.status, "success"), lt(executionLogs.createdAt, staleThreshold)))
+      .returning({ cycleId: executionLogs.cycleId });
+    if (rows.length > 0) console.log(`[Scheduler] Reset ${rows.length} stale execution log(s):`, rows.map((r: { cycleId: string }) => r.cycleId));
+  }
+
+  async createExecutionLog(subId: string, cycleId: string): Promise<any> {
     const [log] = await db
       .insert(executionLogs)
       .values({
@@ -897,10 +907,7 @@ export class DatabaseStorage implements IStorage {
       .onConflictDoUpdate({
         target: executionLogs.cycleId,
         set: { status: "pending", txHash: null, feeConsumed: null },
-        where: or(
-          eq(executionLogs.status, "error"),
-          and(eq(executionLogs.status, "pending"), lt(executionLogs.createdAt, staleThreshold))
-        ),
+        where: eq(executionLogs.status, "error"),
       })
       .returning();
     if (!log) throw new Error(`Idempotency: cycle ${cycleId} already active or completed`);

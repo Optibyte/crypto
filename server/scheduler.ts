@@ -439,6 +439,9 @@ export async function runSchedulerTick(): Promise<void> {
     // Clean up expired QR nonces (low-cost housekeeping)
     try { await storage.cleanupExpiredQrNonces(); } catch { /* non-critical */ }
 
+    // Reset stale pending execution logs so they can be retried
+    try { await storage.resetStaleExecutionLogs(); } catch { /* non-critical */ }
+
     await reconcilePendingExecutions();
 
     const now = new Date();
