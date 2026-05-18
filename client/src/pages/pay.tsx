@@ -64,6 +64,10 @@ function getFriendlyError(error: any, tokenSymbol: string, networkName: string, 
     return `Network RPC is temporarily unavailable on ${networkName}. Please try again.`;
   }
 
+  if (lower.includes("bad_data") || lower.includes("could not decode result data") || lower.includes("value=\"0x\"")) {
+    return `Wrong network detected. Please make sure MetaMask is switched to ${networkName} before paying. Open MetaMask and switch the network manually, then try again.`;
+  }
+
   if (lower.includes("missing revert data") || msg.includes("CALL_EXCEPTION")) {
     if (isTestnet(chainId)) {
       return `Your wallet doesn't have any ${tokenSymbol} test tokens on ${networkName}. You need to get test tokens from a faucet before you can make a payment.`;

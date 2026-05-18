@@ -612,6 +612,9 @@ export function startScheduler(): void {
 
   console.log(`[Scheduler] Starting... Checking every ${CHECK_INTERVAL_MS / 1000}s`);
 
+  // Release any stale lock from a previous process on startup
+  storage.forceReleaseSchedulerLock(SCHEDULER_LOCK_NAME).catch(() => {});
+
   runSchedulerTick();
 
   schedulerInterval = setInterval(runSchedulerTick, CHECK_INTERVAL_MS);
