@@ -589,7 +589,10 @@ export async function runSchedulerTick(): Promise<void> {
       try {
         await storage.releaseSchedulerLock(SCHEDULER_LOCK_NAME, lockOwner);
       } catch (err: any) {
-        console.error("[Scheduler] Failed to release lock:", err.message);
+        console.error("[Scheduler] Failed to release lock, forcing release:", err.message);
+        try {
+          await storage.forceReleaseSchedulerLock(SCHEDULER_LOCK_NAME);
+        } catch (_) {}
       }
     }
     schedulerRunning = false;
@@ -612,12 +615,13 @@ export function startScheduler(): void {
 
   console.log(`[Scheduler] Starting... Checking every ${CHECK_INTERVAL_MS / 1000}s`);
 
-  // Release any stale lock from a previous process on startup
-  storage.forceReleaseSchedulerLock(SCHEDULER_LOCK_NAME).catch(() => {});
-
-  runSchedulerTick();
-
-  schedulerInterval = setInterval(runSchedulerTick, CHECK_INTERVAL_MS);
+  // Release any stale lock from a previous process, then start ticking
+  storage.forceReleaseSchedulerLock(SCHEDULER_LOCK_NAME)
+    .catch(() => {})
+    .finally(() => {
+      runSchedulerTick();
+      schedulerInterval = setInterval(runSchedulerTick, CHECK_INTERVAL_MS);
+    });
 }
 
 export function stopScheduler(): void {
