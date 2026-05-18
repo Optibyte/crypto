@@ -656,9 +656,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     })
   );
 
-  const apiRateLimiter = createRateLimiter(15 * 60 * 1000, 100); // 100 requests per 15 minutes
-  const dashboardPollLimiter = createRateLimiter(15 * 60 * 1000, 1000); // dashboard polls every 5s
-  app.use("/api/dashboard", dashboardPollLimiter);
+  const apiRateLimiter = createRateLimiter(15 * 60 * 1000, 10000); // effectively unlimited for local dev
   app.use("/api", apiRateLimiter);
 
   /**
